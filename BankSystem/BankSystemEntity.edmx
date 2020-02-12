@@ -1,0 +1,599 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BankSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Account_ID" />
+          </Key>
+          <Property Name="Account_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Account_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="Account_Surname" Type="nvarchar" MaxLength="50" />
+          <Property Name="Account_Phone" Type="nvarchar" MaxLength="15" />
+          <Property Name="Account_SSN" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Account_Type" Type="nvarchar" MaxLength="1" />
+          <Property Name="Create_Date" Type="datetime" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PIN" Type="nvarchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IBAN">
+          <Key>
+            <PropertyRef Name="Code" />
+          </Key>
+          <Property Name="Code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Account_ID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LoginLog">
+          <Key>
+            <PropertyRef Name="Log_ID" />
+          </Key>
+          <Property Name="Log_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Account_ID" Type="int" Nullable="false" />
+          <Property Name="Login_Date" Type="datetime" Nullable="false" />
+          <Property Name="Logout_Date" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Transaction_Deposit">
+          <Key>
+            <PropertyRef Name="Dep_ID" />
+          </Key>
+          <Property Name="Dep_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Dep_Fee" Type="decimal" Precision="4" Scale="2" Nullable="false" />
+          <Property Name="Dep_Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Dep_Date" Type="datetime" Nullable="false" />
+          <Property Name="Dep_By" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Transaction_Tranfer">
+          <Key>
+            <PropertyRef Name="Tran_ID" />
+          </Key>
+          <Property Name="Tran_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="From_Code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="From_Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="To_Code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="To_Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Tran_Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Tran_Date" Type="datetime" Nullable="false" />
+          <Property Name="Tran_By" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK__IBAN__Account_ID__4830B400">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Account_ID" />
+            </Principal>
+            <Dependent Role="IBAN">
+              <PropertyRef Name="Account_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__LoginLog__Accoun__51BA1E3A">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="LoginLog" Type="Self.LoginLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Account_ID" />
+            </Principal>
+            <Dependent Role="LoginLog">
+              <PropertyRef Name="Account_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Transacti__From___63D8CE75">
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="1" />
+          <End Role="Transaction_Tranfer" Type="Self.Transaction_Tranfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Tranfer">
+              <PropertyRef Name="From_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Transacti__To_Co__64CCF2AE">
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="1" />
+          <End Role="Transaction_Tranfer" Type="Self.Transaction_Tranfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Tranfer">
+              <PropertyRef Name="To_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Transactio__Code__4EDDB18F">
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="1" />
+          <End Role="Transaction_Deposit" Type="Self.Transaction_Deposit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Deposit">
+              <PropertyRef Name="Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="FN_CheckLogin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Username" Type="nvarchar" Mode="In" />
+          <Parameter Name="PIN" Type="nvarchar" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="Account_ID" Type="int" Nullable="false" />
+                <Property Name="Account_name" Type="nvarchar" MaxLength="50" />
+                <Property Name="Account_Surname" Type="nvarchar" MaxLength="50" />
+                <Property Name="Account_Phone" Type="nvarchar" MaxLength="15" />
+                <Property Name="Account_SSN" Type="nvarchar" MaxLength="50" Nullable="false" />
+                <Property Name="Account_Type" Type="nvarchar" MaxLength="1" />
+                <Property Name="Code" Type="nvarchar" MaxLength="50" />
+                <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="SP_InsertAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="code" Type="nvarchar" Mode="In" />
+          <Parameter Name="firstname" Type="nvarchar" Mode="In" />
+          <Parameter Name="surname" Type="nvarchar" Mode="In" />
+          <Parameter Name="phone" Type="nvarchar" Mode="In" />
+          <Parameter Name="SSN" Type="nvarchar" Mode="In" />
+          <Parameter Name="date" Type="datetime" Mode="In" />
+          <Parameter Name="amount" Type="decimal" Mode="In" />
+          <Parameter Name="Username" Type="nvarchar" Mode="In" />
+          <Parameter Name="PIN" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_InsertDeposit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="amount" Type="decimal" Mode="In" />
+          <Parameter Name="dep_fee" Type="decimal" Mode="In" />
+          <Parameter Name="dep_Amount" Type="decimal" Mode="In" />
+          <Parameter Name="date" Type="datetime" Mode="In" />
+          <Parameter Name="by" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_InsertTranfer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Fo_Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="To_Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="TranAmount" Type="decimal" Mode="In" />
+          <Parameter Name="FromAmount" Type="decimal" Mode="In" />
+          <Parameter Name="ToAmount" Type="decimal" Mode="In" />
+          <Parameter Name="Date" Type="datetime" Mode="In" />
+          <Parameter Name="By" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_Login" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccID" Type="int" Mode="In" />
+          <Parameter Name="date" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="SP_Logout" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccID" Type="int" Mode="In" />
+          <Parameter Name="date" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="SP_SelectAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_SelectAccount_All" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="SP_SelectAccount_ByAccID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SP_SelectAccount_ByAnoAccID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SP_SelectAccount_ByCode" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_UpdateAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="code" Type="nvarchar" Mode="In" />
+          <Parameter Name="firstname" Type="nvarchar" Mode="In" />
+          <Parameter Name="surname" Type="nvarchar" Mode="In" />
+          <Parameter Name="phone" Type="nvarchar" Mode="In" />
+          <Parameter Name="PIN" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_UpdateAmount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="Amount" Type="decimal" Mode="In" />
+        </Function>
+        <EntityContainer Name="BankSystemModelStoreContainer">
+          <EntitySet Name="Account" EntityType="Self.Account" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IBAN" EntityType="Self.IBAN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LoginLog" EntityType="Self.LoginLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transaction_Deposit" EntityType="Self.Transaction_Deposit" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transaction_Tranfer" EntityType="Self.Transaction_Tranfer" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__IBAN__Account_ID__4830B400" Association="Self.FK__IBAN__Account_ID__4830B400">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="IBAN" EntitySet="IBAN" />
+          </AssociationSet>
+          <AssociationSet Name="FK__LoginLog__Accoun__51BA1E3A" Association="Self.FK__LoginLog__Accoun__51BA1E3A">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="LoginLog" EntitySet="LoginLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Transacti__From___63D8CE75" Association="Self.FK__Transacti__From___63D8CE75">
+            <End Role="IBAN" EntitySet="IBAN" />
+            <End Role="Transaction_Tranfer" EntitySet="Transaction_Tranfer" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Transacti__To_Co__64CCF2AE" Association="Self.FK__Transacti__To_Co__64CCF2AE">
+            <End Role="IBAN" EntitySet="IBAN" />
+            <End Role="Transaction_Tranfer" EntitySet="Transaction_Tranfer" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Transactio__Code__4EDDB18F" Association="Self.FK__Transactio__Code__4EDDB18F">
+            <End Role="IBAN" EntitySet="IBAN" />
+            <End Role="Transaction_Deposit" EntitySet="Transaction_Deposit" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BankSystemModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <ComplexType Name="FN_CheckLogin_Result">
+          <Property Name="Account_ID" Type="Int32" Nullable="false" />
+          <Property Name="Account_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Account_Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Account_Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Account_SSN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Account_Type" Type="String" MaxLength="1" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+        </ComplexType>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Account_ID" />
+          </Key>
+          <Property Name="Account_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Account_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Account_Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Account_Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Account_SSN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Account_Type" Type="String" MaxLength="1" FixedLength="false" Unicode="true" />
+          <Property Name="Create_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PIN" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="IBANs" Relationship="Self.FK__IBAN__Account_ID__4830B400" FromRole="Account" ToRole="IBAN" />
+          <NavigationProperty Name="LoginLogs" Relationship="Self.FK__LoginLog__Accoun__51BA1E3A" FromRole="Account" ToRole="LoginLog" />
+        </EntityType>
+        <EntityType Name="IBAN">
+          <Key>
+            <PropertyRef Name="Code" />
+          </Key>
+          <Property Name="Code" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Account_ID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="Self.FK__IBAN__Account_ID__4830B400" FromRole="IBAN" ToRole="Account" />
+          <NavigationProperty Name="Transaction_Deposit" Relationship="Self.FK__Transactio__Code__4EDDB18F" FromRole="IBAN" ToRole="Transaction_Deposit" />
+          <NavigationProperty Name="Transaction_Tranfer" Relationship="BankSystemModel.FK__Transacti__From___63D8CE75" FromRole="IBAN" ToRole="Transaction_Tranfer" />
+          <NavigationProperty Name="Transaction_Tranfer1" Relationship="BankSystemModel.FK__Transacti__To_Co__64CCF2AE" FromRole="IBAN" ToRole="Transaction_Tranfer" />
+          </EntityType>
+        <EntityType Name="LoginLog">
+          <Key>
+            <PropertyRef Name="Log_ID" />
+          </Key>
+          <Property Name="Log_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Account_ID" Type="Int32" Nullable="false" />
+          <Property Name="Login_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Logout_Date" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Account" Relationship="Self.FK__LoginLog__Accoun__51BA1E3A" FromRole="LoginLog" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="Transaction_Deposit">
+          <Key>
+            <PropertyRef Name="Dep_ID" />
+          </Key>
+          <Property Name="Dep_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Dep_Fee" Type="Decimal" Precision="4" Scale="2" Nullable="false" />
+          <Property Name="Dep_Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Dep_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Dep_By" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="IBAN" Relationship="Self.FK__Transactio__Code__4EDDB18F" FromRole="Transaction_Deposit" ToRole="IBAN" />
+        </EntityType>
+        <Association Name="FK__IBAN__Account_ID__4830B400">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Account_ID" />
+            </Principal>
+            <Dependent Role="IBAN">
+              <PropertyRef Name="Account_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__LoginLog__Accoun__51BA1E3A">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="LoginLog" Type="Self.LoginLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Account_ID" />
+            </Principal>
+            <Dependent Role="LoginLog">
+              <PropertyRef Name="Account_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Transactio__Code__4EDDB18F">
+          <End Role="IBAN" Type="Self.IBAN" Multiplicity="1" />
+          <End Role="Transaction_Deposit" Type="Self.Transaction_Deposit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Deposit">
+              <PropertyRef Name="Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BankSystemEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="IBANs" EntityType="Self.IBAN" />
+          <EntitySet Name="LoginLogs" EntityType="Self.LoginLog" />
+          <EntitySet Name="Transaction_Deposit" EntityType="Self.Transaction_Deposit" />
+          <AssociationSet Name="FK__IBAN__Account_ID__4830B400" Association="Self.FK__IBAN__Account_ID__4830B400">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="IBAN" EntitySet="IBANs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__LoginLog__Accoun__51BA1E3A" Association="Self.FK__LoginLog__Accoun__51BA1E3A">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="LoginLog" EntitySet="LoginLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Transactio__Code__4EDDB18F" Association="Self.FK__Transactio__Code__4EDDB18F">
+            <End Role="IBAN" EntitySet="IBANs" />
+            <End Role="Transaction_Deposit" EntitySet="Transaction_Deposit" />
+          </AssociationSet>
+          <FunctionImport Name="FN_CheckLogin" IsComposable="true" ReturnType="Collection(BankSystemModel.FN_CheckLogin_Result)">
+            <Parameter Name="Username" Mode="In" Type="String" />
+            <Parameter Name="PIN" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_InsertAccount">
+            <Parameter Name="code" Mode="In" Type="String" />
+            <Parameter Name="firstname" Mode="In" Type="String" />
+            <Parameter Name="surname" Mode="In" Type="String" />
+            <Parameter Name="phone" Mode="In" Type="String" />
+            <Parameter Name="SSN" Mode="In" Type="String" />
+            <Parameter Name="date" Mode="In" Type="DateTime" />
+            <Parameter Name="amount" Mode="In" Type="Decimal" />
+            <Parameter Name="Username" Mode="In" Type="String" />
+            <Parameter Name="PIN" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_InsertDeposit">
+            <Parameter Name="Code" Mode="In" Type="String" />
+            <Parameter Name="amount" Mode="In" Type="Decimal" />
+            <Parameter Name="dep_fee" Mode="In" Type="Decimal" />
+            <Parameter Name="dep_Amount" Mode="In" Type="Decimal" />
+            <Parameter Name="date" Mode="In" Type="DateTime" />
+            <Parameter Name="by" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_InsertTranfer">
+            <Parameter Name="Fo_Code" Mode="In" Type="String" />
+            <Parameter Name="To_Code" Mode="In" Type="String" />
+            <Parameter Name="TranAmount" Mode="In" Type="Decimal" />
+            <Parameter Name="FromAmount" Mode="In" Type="Decimal" />
+            <Parameter Name="ToAmount" Mode="In" Type="Decimal" />
+            <Parameter Name="Date" Mode="In" Type="DateTime" />
+            <Parameter Name="By" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_Login">
+            <Parameter Name="AccID" Mode="In" Type="Int32" />
+            <Parameter Name="date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SP_Logout">
+            <Parameter Name="AccID" Mode="In" Type="Int32" />
+            <Parameter Name="date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SP_SelectAccount" ReturnType="Collection(BankSystemModel.SP_SelectAccount_Result)">
+          <Parameter Name="Code" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_SelectAccount_All" ReturnType="Collection(String)" />
+          <FunctionImport Name="SP_SelectAccount_ByAccID" ReturnType="Collection(String)">
+          <Parameter Name="AccID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SP_UpdateAmount">
+            <Parameter Name="Code" Mode="In" Type="String" />
+            <Parameter Name="Amount" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="SP_SelectAccount_ByAnoAccID" ReturnType="Collection(String)">
+          <Parameter Name="AccID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SP_SelectAccount_ByCode" ReturnType="Collection(String)">
+          <Parameter Name="Code" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_UpdateAccount">
+            <Parameter Name="code" Mode="In" Type="String" />
+            <Parameter Name="firstname" Mode="In" Type="String" />
+            <Parameter Name="surname" Mode="In" Type="String" />
+            <Parameter Name="phone" Mode="In" Type="String" />
+            <Parameter Name="PIN" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Transaction_Tranfer" EntityType="BankSystemModel.Transaction_Tranfer" />
+          <AssociationSet Name="FK__Transacti__From___63D8CE75" Association="BankSystemModel.FK__Transacti__From___63D8CE75">
+            <End Role="IBAN" EntitySet="IBANs" />
+            <End Role="Transaction_Tranfer" EntitySet="Transaction_Tranfer" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Transacti__To_Co__64CCF2AE" Association="BankSystemModel.FK__Transacti__To_Co__64CCF2AE">
+            <End Role="IBAN" EntitySet="IBANs" />
+            <End Role="Transaction_Tranfer" EntitySet="Transaction_Tranfer" />
+          </AssociationSet>
+        </EntityContainer>
+        <ComplexType Name="SP_SelectAccount_Result">
+          <Property Type="String" Name="Code" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="Account_ID" Nullable="false" />
+          <Property Type="String" Name="Account_name" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Account_Surname" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Account_Phone" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="Account_SSN" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Account_Type" Nullable="true" MaxLength="1" />
+          <Property Type="Decimal" Name="Amount" Nullable="false" Precision="18" Scale="2" />
+        </ComplexType>
+        <EntityType Name="Transaction_Tranfer">
+          <Key>
+            <PropertyRef Name="Tran_ID" />
+          </Key>
+          <Property Name="Tran_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="From_Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="From_Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="To_Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="To_Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Tran_Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Tran_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Tran_By" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="IBAN" Relationship="BankSystemModel.FK__Transacti__From___63D8CE75" FromRole="Transaction_Tranfer" ToRole="IBAN" />
+          <NavigationProperty Name="IBAN1" Relationship="BankSystemModel.FK__Transacti__To_Co__64CCF2AE" FromRole="Transaction_Tranfer" ToRole="IBAN" />
+        </EntityType>
+        <Association Name="FK__Transacti__From___63D8CE75">
+          <End Type="BankSystemModel.IBAN" Role="IBAN" Multiplicity="1" />
+          <End Type="BankSystemModel.Transaction_Tranfer" Role="Transaction_Tranfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Tranfer">
+              <PropertyRef Name="From_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Transacti__To_Co__64CCF2AE">
+          <End Type="BankSystemModel.IBAN" Role="IBAN" Multiplicity="1" />
+          <End Type="BankSystemModel.Transaction_Tranfer" Role="Transaction_Tranfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IBAN">
+              <PropertyRef Name="Code" />
+            </Principal>
+            <Dependent Role="Transaction_Tranfer">
+              <PropertyRef Name="To_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BankSystemModelStoreContainer" CdmEntityContainer="BankSystemEntities">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="BankSystemModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="Account_ID" ColumnName="Account_ID" />
+                <ScalarProperty Name="Account_name" ColumnName="Account_name" />
+                <ScalarProperty Name="Account_Surname" ColumnName="Account_Surname" />
+                <ScalarProperty Name="Account_Phone" ColumnName="Account_Phone" />
+                <ScalarProperty Name="Account_SSN" ColumnName="Account_SSN" />
+                <ScalarProperty Name="Account_Type" ColumnName="Account_Type" />
+                <ScalarProperty Name="Create_Date" ColumnName="Create_Date" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="PIN" ColumnName="PIN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IBANs">
+            <EntityTypeMapping TypeName="BankSystemModel.IBAN">
+              <MappingFragment StoreEntitySet="IBAN">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Account_ID" ColumnName="Account_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LoginLogs">
+            <EntityTypeMapping TypeName="BankSystemModel.LoginLog">
+              <MappingFragment StoreEntitySet="LoginLog">
+                <ScalarProperty Name="Log_ID" ColumnName="Log_ID" />
+                <ScalarProperty Name="Account_ID" ColumnName="Account_ID" />
+                <ScalarProperty Name="Login_Date" ColumnName="Login_Date" />
+                <ScalarProperty Name="Logout_Date" ColumnName="Logout_Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transaction_Deposit">
+            <EntityTypeMapping TypeName="BankSystemModel.Transaction_Deposit">
+              <MappingFragment StoreEntitySet="Transaction_Deposit">
+                <ScalarProperty Name="Dep_ID" ColumnName="Dep_ID" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Dep_Fee" ColumnName="Dep_Fee" />
+                <ScalarProperty Name="Dep_Amount" ColumnName="Dep_Amount" />
+                <ScalarProperty Name="Dep_Date" ColumnName="Dep_Date" />
+                <ScalarProperty Name="Dep_By" ColumnName="Dep_By" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionName="BankSystemModel.Store.FN_CheckLogin" FunctionImportName="FN_CheckLogin">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="BankSystemModel.FN_CheckLogin_Result">
+                <ScalarProperty Name="Account_ID" ColumnName="Account_ID" />
+                <ScalarProperty Name="Account_name" ColumnName="Account_name" />
+                <ScalarProperty Name="Account_Surname" ColumnName="Account_Surname" />
+                <ScalarProperty Name="Account_Phone" ColumnName="Account_Phone" />
+                <ScalarProperty Name="Account_SSN" ColumnName="Account_SSN" />
+                <ScalarProperty Name="Account_Type" ColumnName="Account_Type" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SP_InsertAccount" FunctionName="BankSystemModel.Store.SP_InsertAccount" />
+          <FunctionImportMapping FunctionImportName="SP_InsertDeposit" FunctionName="BankSystemModel.Store.SP_InsertDeposit" />
+          <FunctionImportMapping FunctionImportName="SP_InsertTranfer" FunctionName="BankSystemModel.Store.SP_InsertTranfer" />
+          <FunctionImportMapping FunctionImportName="SP_Login" FunctionName="BankSystemModel.Store.SP_Login" />
+          <FunctionImportMapping FunctionImportName="SP_Logout" FunctionName="BankSystemModel.Store.SP_Logout" />
+          <FunctionImportMapping FunctionImportName="SP_SelectAccount" FunctionName="BankSystemModel.Store.SP_SelectAccount">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="BankSystemModel.SP_SelectAccount_Result">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Account_ID" ColumnName="Account_ID" />
+                <ScalarProperty Name="Account_name" ColumnName="Account_name" />
+                <ScalarProperty Name="Account_Surname" ColumnName="Account_Surname" />
+                <ScalarProperty Name="Account_Phone" ColumnName="Account_Phone" />
+                <ScalarProperty Name="Account_SSN" ColumnName="Account_SSN" />
+                <ScalarProperty Name="Account_Type" ColumnName="Account_Type" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SP_SelectAccount_All" FunctionName="BankSystemModel.Store.SP_SelectAccount_All" />
+          <FunctionImportMapping FunctionImportName="SP_SelectAccount_ByAccID" FunctionName="BankSystemModel.Store.SP_SelectAccount_ByAccID" />
+          <FunctionImportMapping FunctionImportName="SP_UpdateAmount" FunctionName="BankSystemModel.Store.SP_UpdateAmount" />
+          <FunctionImportMapping FunctionImportName="SP_SelectAccount_ByAnoAccID" FunctionName="BankSystemModel.Store.SP_SelectAccount_ByAnoAccID" />
+          <FunctionImportMapping FunctionImportName="SP_SelectAccount_ByCode" FunctionName="BankSystemModel.Store.SP_SelectAccount_ByCode" />
+          <FunctionImportMapping FunctionImportName="SP_UpdateAccount" FunctionName="BankSystemModel.Store.SP_UpdateAccount" />
+          <EntitySetMapping Name="Transaction_Tranfer">
+            <EntityTypeMapping TypeName="BankSystemModel.Transaction_Tranfer">
+              <MappingFragment StoreEntitySet="Transaction_Tranfer">
+                <ScalarProperty Name="Tran_By" ColumnName="Tran_By" />
+                <ScalarProperty Name="Tran_Date" ColumnName="Tran_Date" />
+                <ScalarProperty Name="Tran_Amount" ColumnName="Tran_Amount" />
+                <ScalarProperty Name="To_Amount" ColumnName="To_Amount" />
+                <ScalarProperty Name="To_Code" ColumnName="To_Code" />
+                <ScalarProperty Name="From_Amount" ColumnName="From_Amount" />
+                <ScalarProperty Name="From_Code" ColumnName="From_Code" />
+                <ScalarProperty Name="Tran_ID" ColumnName="Tran_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
